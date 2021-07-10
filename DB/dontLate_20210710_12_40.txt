@@ -1,0 +1,85 @@
+﻿-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- member Table Create SQL
+CREATE TABLE member
+(
+    `memberNo`    INT            NOT NULL    AUTO_INCREMENT COMMENT 'memberNo', 
+    `phoneNo`     VARCHAR(45)    NOT NULL    COMMENT 'phoneNo', 
+    `point`       INT            NOT NULL    COMMENT 'point', 
+    `nickname`    VARCHAR(45)    NOT NULL    COMMENT 'nickname', 
+    `allMeeting`  INT            NOT NULL    COMMENT 'allMeeting', 
+    `late`        INT            NOT NULL    COMMENT 'late', 
+     PRIMARY KEY (memberNo)
+);
+
+ALTER TABLE member COMMENT '멤버';
+
+
+-- meeting Table Create SQL
+CREATE TABLE meeting
+(
+    `meetingNo`    INT            NOT NULL    AUTO_INCREMENT COMMENT 'meetingNo', 
+    `meetingDate`  DATETIME       NOT NULL    COMMENT '날짜 및 시간', 
+    `maker`        INT            NOT NULL    COMMENT '초대한 사람', 
+    `meetingSpot`  VARCHAR(45)    NOT NULL    COMMENT '장소', 
+    `y`            VARCHAR(45)    NOT NULL    COMMENT '위도', 
+    `x`            VARCHAR(45)    NOT NULL    COMMENT '경도', 
+     PRIMARY KEY (meetingNo)
+);
+
+ALTER TABLE meeting COMMENT '약속';
+
+ALTER TABLE meeting
+    ADD CONSTRAINT FK_meeting_maker_member_memberNo FOREIGN KEY (maker)
+        REFERENCES member (memberNo) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- rewards Table Create SQL
+CREATE TABLE rewards
+(
+    `rewardNo`    INT             NOT NULL    AUTO_INCREMENT COMMENT 'rewardNo', 
+    `rewardName`  VARCHAR(255)    NOT NULL    COMMENT 'rewardName', 
+    `rewardDesc`  VARCHAR(255)    NOT NULL    COMMENT 'rewardDesc', 
+     PRIMARY KEY (rewardNo)
+);
+
+ALTER TABLE rewards COMMENT '전체 뱃지';
+
+
+-- entry Table Create SQL
+CREATE TABLE entry
+(
+    `meetingNo`   INT         NOT NULL    COMMENT 'meetingNo', 
+    `memberNo`    INT         NOT NULL    COMMENT 'memberNo', 
+    `arriveTIme`  DATETIME    NOT NULL    COMMENT 'arriveTIme'
+);
+
+ALTER TABLE entry COMMENT '참가자';
+
+ALTER TABLE entry
+    ADD CONSTRAINT FK_entry_meetingNo_meeting_meetingNo FOREIGN KEY (meetingNo)
+        REFERENCES meeting (meetingNo) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE entry
+    ADD CONSTRAINT FK_entry_memberNo_member_memberNo FOREIGN KEY (memberNo)
+        REFERENCES member (memberNo) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- getReward Table Create SQL
+CREATE TABLE getReward
+(
+    `memberNo`    INT    NOT NULL    COMMENT 'memberNo', 
+    `rewardName`  INT    NOT NULL    COMMENT 'rewardNo'
+);
+
+ALTER TABLE getReward COMMENT '받은 뱃지';
+
+ALTER TABLE getReward
+    ADD CONSTRAINT FK_getReward_memberNo_member_memberNo FOREIGN KEY (memberNo)
+        REFERENCES member (memberNo) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE getReward
+    ADD CONSTRAINT FK_getReward_rewardName_rewards_rewardNo FOREIGN KEY (rewardName)
+        REFERENCES rewards (rewardNo) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
